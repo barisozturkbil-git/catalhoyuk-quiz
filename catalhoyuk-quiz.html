@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Çatalhöyük Bilgi Yarışması 🏺</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --sand:#F5E6C8;
+  --clay:#C8874A;
+  --terracotta:#B85C38;
+  --deep:#7A3E1D;
+  --sky:#5BB8F5;
+  --green:#4CAF50;
+  --red:#E53935;
+  --gold:#FFD700;
+  --white:#FFF8F0;
+}
+body{
+  font-family:'Nunito',sans-serif;
+  background:linear-gradient(135deg,#F5E6C8 0%,#E8D4A8 50%,#D4B88A 100%);
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:16px;
+}
+.container{
+  max-width:520px;
+  width:100%;
+  margin:0 auto;
+}
+.card{
+  background:var(--white);
+  border-radius:24px;
+  padding:28px 24px;
+  box-shadow:0 8px 32px rgba(122,62,29,0.18);
+  position:relative;
+  overflow:hidden;
+}
+.card::before{
+  content:'';
+  position:absolute;
+  top:0;left:0;right:0;
+  height:6px;
+  background:linear-gradient(90deg,var(--terracotta),var(--clay),var(--gold),var(--clay),var(--terracotta));
+}
+.header-emoji{
+  font-size:52px;
+  text-align:center;
+  margin-bottom:8px;
+  display:block;
+}
+h1{
+  font-family:'Fredoka One',cursive;
+  text-align:center;
+  color:var(--deep);
+  font-size:clamp(22px,5vw,30px);
+  line-height:1.2;
+  margin-bottom:6px;
+}
+.subtitle{
+  text-align:center;
+  color:var(--clay);
+  font-size:14px;
+  font-weight:600;
+  margin-bottom:20px;
+}
+.start-btn{
+  display:block;
+  width:100%;
+  padding:16px;
+  font-family:'Fredoka One',cursive;
+  font-size:22px;
+  background:linear-gradient(135deg,var(--terracotta),var(--clay));
+  color:#fff;
+  border:none;
+  border-radius:16px;
+  cursor:pointer;
+  letter-spacing:0.5px;
+  transition:transform .15s,box-shadow .15s;
+  box-shadow:0 4px 16px rgba(184,92,56,0.4);
+}
+.start-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(184,92,56,0.5)}
+.start-btn:active{transform:translateY(0)}
+
+.progress-bar{
+  background:#E8D4A8;
+  border-radius:99px;
+  height:12px;
+  margin-bottom:20px;
+  overflow:hidden;
+}
+.progress-fill{
+  height:100%;
+  background:linear-gradient(90deg,var(--terracotta),var(--gold));
+  border-radius:99px;
+  transition:width .4s ease;
+}
+.q-counter{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:16px;
+}
+.q-num{
+  font-family:'Fredoka One',cursive;
+  color:var(--terracotta);
+  font-size:15px;
+}
+.score-badge{
+  background:var(--deep);
+  color:var(--gold);
+  padding:4px 12px;
+  border-radius:99px;
+  font-weight:800;
+  font-size:14px;
+}
+.question-text{
+  font-size:clamp(16px,4vw,19px);
+  font-weight:700;
+  color:var(--deep);
+  line-height:1.45;
+  margin-bottom:20px;
+  text-align:center;
+  min-height:70px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.options{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.option-btn{
+  padding:13px 16px;
+  background:#FFF8F0;
+  border:2.5px solid #E8D4A8;
+  border-radius:14px;
+  font-family:'Nunito',sans-serif;
+  font-size:15px;
+  font-weight:700;
+  color:var(--deep);
+  cursor:pointer;
+  text-align:left;
+  transition:all .15s;
+  position:relative;
+  line-height:1.3;
+}
+.option-btn:hover:not(:disabled){
+  border-color:var(--clay);
+  background:#FAEBD7;
+  transform:translateX(4px);
+}
+.option-btn.correct{
+  background:#E8F5E9;
+  border-color:var(--green);
+  color:#2E7D32;
+}
+.option-btn.wrong{
+  background:#FFEBEE;
+  border-color:var(--red);
+  color:var(--red);
+}
+.option-btn.reveal{
+  background:#FFF3E0;
+  border-color:var(--clay);
+  color:var(--deep);
+}
+.option-btn:disabled{cursor:default;transform:none}
+.feedback{
+  margin-top:16px;
+  padding:12px 16px;
+  border-radius:14px;
+  font-weight:700;
+  font-size:15px;
+  text-align:center;
+  display:none;
+}
+.feedback.show{display:block}
+.feedback.correct{background:#E8F5E9;color:#2E7D32}
+.feedback.wrong{background:#FFEBEE;color:var(--red)}
+.next-btn{
+  display:none;
+  width:100%;
+  margin-top:12px;
+  padding:13px;
+  font-family:'Fredoka One',cursive;
+  font-size:18px;
+  background:linear-gradient(135deg,var(--deep),var(--terracotta));
+  color:#fff;
+  border:none;
+  border-radius:14px;
+  cursor:pointer;
+  transition:transform .15s;
+  box-shadow:0 3px 12px rgba(122,62,29,0.35);
+}
+.next-btn:hover{transform:translateY(-2px)}
+.next-btn.show{display:block}
+
+.result-card{text-align:center}
+.result-emoji{font-size:72px;margin-bottom:12px;display:block}
+.result-score{
+  font-family:'Fredoka One',cursive;
+  font-size:clamp(36px,8vw,52px);
+  color:var(--terracotta);
+  margin-bottom:4px;
+}
+.result-text{
+  font-size:clamp(15px,3.5vw,18px);
+  color:var(--deep);
+  font-weight:700;
+  margin-bottom:20px;
+  line-height:1.4;
+}
+.result-bars{
+  background:#F5E6C8;
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:20px;
+}
+.bar-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:8px;
+  font-size:13px;
+  font-weight:700;
+  color:var(--deep);
+}
+.bar-row:last-child{margin-bottom:0}
+.bar-label{width:90px;text-align:right;flex-shrink:0}
+.bar-track{flex:1;background:#E8D4A8;border-radius:99px;height:16px;overflow:hidden}
+.bar-fill{height:100%;border-radius:99px;transition:width 1s ease}
+.bar-val{width:30px;flex-shrink:0;color:var(--clay)}
+.restart-btn{
+  display:block;
+  width:100%;
+  padding:15px;
+  font-family:'Fredoka One',cursive;
+  font-size:20px;
+  background:linear-gradient(135deg,var(--terracotta),var(--clay));
+  color:#fff;
+  border:none;
+  border-radius:16px;
+  cursor:pointer;
+  box-shadow:0 4px 16px rgba(184,92,56,0.4);
+  transition:transform .15s;
+}
+.restart-btn:hover{transform:translateY(-2px)}
+
+.decor{
+  position:absolute;
+  opacity:0.07;
+  font-size:80px;
+  pointer-events:none;
+}
+.decor-tl{top:-10px;left:-10px;transform:rotate(-20deg)}
+.decor-br{bottom:-10px;right:-10px;transform:rotate(15deg)}
+
+.fun-fact{
+  background:linear-gradient(135deg,#FFF3E0,#FAEBD7);
+  border:2px dashed var(--clay);
+  border-radius:14px;
+  padding:12px 14px;
+  margin-top:12px;
+  font-size:13px;
+  color:var(--deep);
+  line-height:1.5;
+  display:none;
+}
+.fun-fact.show{display:block}
+.fun-fact strong{color:var(--terracotta)}
+
+@keyframes bounce{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+.bounce{animation:bounce .4s ease}
+
+@media(max-width:400px){
+  .card{padding:20px 16px}
+  .option-btn{font-size:14px;padding:11px 13px}
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+<div class="card" id="start-screen">
+  <span class="decor decor-tl">🏺</span>
+  <span class="decor decor-br">🦬</span>
+  <span class="header-emoji">🏛️</span>
+  <h1>Çatalhöyük<br>Bilgi Yarışması!</h1>
+  <p class="subtitle">🌟 10 Soruluk Eğlenceli Bilgi Yarışması 🌟</p>
+  <div style="background:#F5E6C8;border-radius:16px;padding:16px;margin-bottom:20px;font-size:14px;color:#7A3E1D;line-height:1.6">
+    <strong>🗺️ Hazır mısın?</strong><br>
+    Türkiye'nin en eski şehirlerinden biri olan <strong>Çatalhöyük</strong> hakkında ne kadar bilgi sahibisin? 10 soruyu yanıtla ve puanını gör! 🎉
+  </div>
+  <button class="start-btn" onclick="startQuiz()">🚀 Yarışmaya Başla!</button>
+</div>
+
+<div class="card" id="quiz-screen" style="display:none">
+  <div class="q-counter">
+    <span class="q-num" id="q-num">Soru 1/10</span>
+    <span class="score-badge" id="score-display">⭐ 0</span>
+  </div>
+  <div class="progress-bar">
+    <div class="progress-fill" id="progress-fill" style="width:10%"></div>
+  </div>
+  <div class="question-text" id="question-text"></div>
+  <div class="options" id="options"></div>
+  <div class="feedback" id="feedback"></div>
+  <div class="fun-fact" id="fun-fact"></div>
+  <button class="next-btn" id="next-btn" onclick="nextQuestion()">Sonraki Soru ➜</button>
+</div>
+
+<div class="card result-card" id="result-screen" style="display:none">
+  <span class="result-emoji" id="result-emoji">🏆</span>
+  <div class="result-score" id="result-score">10/10</div>
+  <div class="result-text" id="result-text">Harika!</div>
+  <div class="result-bars">
+    <div class="bar-row">
+      <span class="bar-label">Doğru ✅</span>
+      <div class="bar-track"><div class="bar-fill" id="bar-correct" style="background:#4CAF50;width:0%"></div></div>
+      <span class="bar-val" id="bv-correct">0</span>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label">Yanlış ❌</span>
+      <div class="bar-track"><div class="bar-fill" id="bar-wrong" style="background:#E53935;width:0%"></div></div>
+      <span class="bar-val" id="bv-wrong">0</span>
+    </div>
+  </div>
+  <button class="restart-btn" onclick="restartQuiz()">🔄 Tekrar Oyna!</button>
+</div>
+</div>
+
+<script>
+const questions=[
+  {
+    q:"Çatalhöyük nerede bulunmaktadır?",
+    opts:["İstanbul yakınlarında","Konya'nın güneyinde","Ankara'nın kuzeyinde","İzmir kıyısında"],
+    ans:1,
+    fact:"🗺️ Çatalhöyük, Konya'nın yaklaşık 52 kilometre güneyinde, Çumra ilçesinde yer alır."
+  },
+  {
+    q:"Çatalhöyük insanları evlerine nasıl girerdi?",
+    opts:["Büyük pencerelerden","Yan kapılardan","Çatıdaki delikten merdiveniyle","Yeraltı tünellerinden"],
+    ans:2,
+    fact:"🏠 Evlerde yan kapı yoktu! Çatıdaki bir açıklıktan ahşap merdivenle inilip çıkılırdı. Bu hem güvenlik sağlıyor hem de soğuktan korunmaya yardımcı oluyordu."
+  },
+  {
+    q:"Çatalhöyük yaklaşık kaç yıl önce kurulmuştur?",
+    opts:["Yaklaşık 1.000 yıl önce","Yaklaşık 3.000 yıl önce","Yaklaşık 5.000 yıl önce","Yaklaşık 9.000 yıl önce"],
+    ans:3,
+    fact:"⏳ Çatalhöyük, bundan yaklaşık 9.000 yıl önce, yani MÖ 7500-5700 yılları arasında kurulmuş ve yaşatılmıştır. Bu, insanlık tarihinin en eski yerleşim yerlerinden biridir!"
+  },
+  {
+    q:"Çatalhöyük sakinleri duvarlarını nasıl süslerdi?",
+    opts:["Renkli kumaşlarla astarlarlardı","Duvarlarına resim ve desenler boyarlardı","Ahşap oymalı paneller asarlardı","Taş kabartmalar yaparlardı"],
+    ans:1,
+    fact:"🎨 Çatalhöyük insanları, duvarlarını canlı renklerde insan figürleri, hayvan resimleri ve geometrik desenlerle beziyordu. Bu tablolar, bilinen en eski duvar resimleri arasındadır!"
+  },
+  {
+    q:"Çatalhöyük, UNESCO tarafından hangi unvana sahiptir?",
+    opts:["Dünya Mirası Alanı","Uluslararası Müze","Tarihi Savaş Alanı","Antik Ticaret Merkezi"],
+    ans:0,
+    fact:"🌍 Çatalhöyük, 2012 yılında UNESCO Dünya Mirası Listesi'ne alınmıştır. Bu, dünyanın en değerli kültürel ve doğal alanlarının korunduğu özel bir listedir."
+  },
+  {
+    q:"Çatalhöyük'te insanlar öldüklerinde nereye gömülürdü?",
+    opts:["Kentin dışındaki mezarlıklara","Nehir kenarlarına","Kendi evlerinin tabanlarına","Dağların eteklerine"],
+    ans:2,
+    fact:"⚰️ Çatalhöyük'te insanlar, yaşadıkları evin zemininin altına gömülürdü. Atalarına saygı duyan bu topluluk, onları yanı başında tutmayı tercih ediyordu."
+  },
+  {
+    q:"Çatalhöyük'te insanlar geçimini nasıl sağlardı?",
+    opts:["Yalnızca balıkçılıkla","Tarım yaparak ve hayvan besleyerek","Sadece avcılık ve toplayıcılıkla","Ticaret gemileriyle deniz yoluyla"],
+    ans:1,
+    fact:"🌾 Çatalhöyük insanları buğday, arpa gibi bitkiler yetiştiriyor; sığır, koyun ve keçi besliyordu. Hem tarım hem hayvancılık yapan bu topluluk, yerleşik yaşamın öncülerindendi."
+  },
+  {
+    q:"Çatalhöyük'te en çok hangi hayvanın resimleri yapılmıştır?",
+    opts:["At","Aslan","Yaban Boğası (Aurochs)","Kartal"],
+    ans:2,
+    fact:"🦬 Çatalhöyük duvarlarında yaban boğası (aurochs) resimleri sıkça görülür. Bu devasa hayvanlar, o dönem insanları için hem korkulan hem de saygı duyulan kutsal varlıklardı."
+  },
+  {
+    q:"Çatalhöyük'te kaç kişinin yaşadığı tahmin edilmektedir?",
+    opts:["Yaklaşık 50-100 kişi","Yaklaşık 500-1.000 kişi","Yaklaşık 5.000-8.000 kişi","Yaklaşık 50.000 kişi"],
+    ans:2,
+    fact:"👨‍👩‍👧‍👦 Çatalhöyük'te yaklaşık 5.000-8.000 kişinin bir arada yaşadığı düşünülmektedir. Bu, o dönem için çok büyük ve kalabalık bir topluluktu!"
+  },
+  {
+    q:"Çatalhöyük hangi çağa aittir?",
+    opts:["Demir Çağı","Tunç Çağı","Taş Devri (Neolitik Dönem)","Ortaçağ"],
+    ans:2,
+    fact:"🪨 Çatalhöyük, Taş Devri'nin son evresi olan Neolitik Döneme aittir. Bu dönemde insanlar taşı işlemeyi, tarım yapmayı ve evler inşa etmeyi yeni yeni öğrenmişti."
+  }
+];
+
+let current=0,score=0,answered=false;
+
+function startQuiz(){
+  document.getElementById('start-screen').style.display='none';
+  document.getElementById('quiz-screen').style.display='block';
+  showQuestion();
+}
+function showQuestion(){
+  const q=questions[current];
+  answered=false;
+  document.getElementById('q-num').textContent=`Soru ${current+1}/10`;
+  document.getElementById('score-display').textContent=`⭐ ${score}`;
+  document.getElementById('progress-fill').style.width=`${((current)/10)*100}%`;
+  document.getElementById('question-text').textContent=q.q;
+  document.getElementById('feedback').className='feedback';
+  document.getElementById('feedback').textContent='';
+  document.getElementById('fun-fact').className='fun-fact';
+  document.getElementById('next-btn').className='next-btn';
+  const opts=document.getElementById('options');
+  opts.innerHTML='';
+  q.opts.forEach((o,i)=>{
+    const btn=document.createElement('button');
+    btn.className='option-btn';
+    btn.textContent=String.fromCharCode(65+i)+') '+o;
+    btn.onclick=()=>selectAnswer(i,btn);
+    opts.appendChild(btn);
+  });
+}
+function selectAnswer(idx,btn){
+  if(answered)return;
+  answered=true;
+  const q=questions[current];
+  const allBtns=document.querySelectorAll('.option-btn');
+  allBtns.forEach(b=>b.disabled=true);
+  if(idx===q.ans){
+    btn.classList.add('correct');
+    score++;
+    document.getElementById('feedback').textContent='✅ Harika! Doğru cevap!';
+    document.getElementById('feedback').className='feedback correct show';
+    btn.classList.add('bounce');
+  } else {
+    btn.classList.add('wrong');
+    allBtns[q.ans].classList.add('reveal');
+    document.getElementById('feedback').textContent='❌ Yanlış! Doğru cevap: '+String.fromCharCode(65+q.ans)+') '+q.opts[q.ans];
+    document.getElementById('feedback').className='feedback wrong show';
+  }
+  document.getElementById('score-display').textContent=`⭐ ${score}`;
+  document.getElementById('fun-fact').innerHTML='<strong>💡 Biliyor muydun?</strong> '+q.fact;
+  document.getElementById('fun-fact').className='fun-fact show';
+  const nb=document.getElementById('next-btn');
+  nb.textContent=current<9?'Sonraki Soru ➜':'Sonuçları Gör 🏆';
+  nb.className='next-btn show';
+}
+function nextQuestion(){
+  current++;
+  if(current>=10){showResult();return;}
+  showQuestion();
+}
+function showResult(){
+  document.getElementById('quiz-screen').style.display='none';
+  const rs=document.getElementById('result-screen');
+  rs.style.display='block';
+  const wrong=10-score;
+  const pct=score*10;
+  let emoji,text;
+  if(score===10){emoji='🏆';text='Mükemmel! 10 üzerinden 10! Sen bir Çatalhöyük uzmanısın! 🌟';}
+  else if(score>=8){emoji='🥇';text='Çok iyi! Çatalhöyük hakkında harika bilgilere sahipsin! 🎉';}
+  else if(score>=6){emoji='🥈';text='Güzel! Biraz daha çalışırsan uzman olursun! 💪';}
+  else if(score>=4){emoji='🥉';text='Fena değil! Çatalhöyük hakkında daha fazla şey öğrenebilirsin! 📚';}
+  else{emoji='🦬';text='Devam et! Çatalhöyük çok ilginç bir yer, tekrar dene! 🔄';}
+  document.getElementById('result-emoji').textContent=emoji;
+  document.getElementById('result-score').textContent=`${score}/10`;
+  document.getElementById('result-text').textContent=text;
+  setTimeout(()=>{
+    document.getElementById('bar-correct').style.width=`${pct}%`;
+    document.getElementById('bar-wrong').style.width=`${wrong*10}%`;
+  },300);
+  document.getElementById('bv-correct').textContent=score;
+  document.getElementById('bv-wrong').textContent=wrong;
+}
+function restartQuiz(){
+  current=0;score=0;answered=false;
+  document.getElementById('result-screen').style.display='none';
+  document.getElementById('quiz-screen').style.display='block';
+  showQuestion();
+}
+</script>
+</body>
+</html>
